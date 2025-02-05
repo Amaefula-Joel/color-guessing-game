@@ -8,6 +8,8 @@ let newGameButton = document.querySelector('#newGameButton');
 let score = 0;
 let correctColor = '';
 
+let successMessages = ['Correct! Next One!!', 'You are a genius!', 'You are on fire!', 'You are a pro!', 'You are a champ!', 'You are a legend!', 'You are a master!', 'You are a wizard!', 'You are a king!', 'You are a queen!', 'You are a god!', 'You are a goddess!', 'You are a superhero!', 'You are a superwoman!', 'You are a superman!', 'You are a superhuman!', 'You are a superbeing!', 'You are a superpower!', 'You are a superforce!', 'You are a supermind!', 'You are a superbrain!', 'You are a supergenius!', 'You are a superlegend!', 'You are a supermaster!', 'You are a superchamp!', 'You are a superking!', 'You are a superqueen!', 'You are a supergod!', 'You are a supergoddess'];
+
 let failedGame = false;
 
 
@@ -47,11 +49,30 @@ let assignColors = () => {
     colorBox.style.backgroundColor = correctColor;
 }
 
-function wrongAnimation() {
-    gameStatus.classList.add('animate__headShake');
-    setTimeout(() => {
-        gameStatus.classList.remove('animate__headShake');
-    }, 500);
+function handleStatus(status) {
+    
+    gameStatus.classList.remove('text-red-600', 'text-green-500');
+    
+    if (status === 'correct') {
+
+        let randomIndex = Math.floor(Math.random() * successMessages.length);
+
+        gameStatus.textContent = successMessages[randomIndex];
+
+        gameStatus.classList.add('animate__tada', 'text-green-500');
+        setTimeout(() => {
+            gameStatus.classList.remove('animate__tada')
+            assignColors();
+        }, 600);
+    } else {
+        gameStatus.textContent = 'Wrong! Start a new game';
+        gameStatus.classList.add('animate__headShake', 'text-red-600');
+        setTimeout(() => {
+            gameStatus.classList.remove('animate__headShake');
+        }, 500);
+    }
+    // gameStatus.classList.add('animate__headShake');
+
 }
 
 // event listener for the color options
@@ -59,7 +80,7 @@ colorOptions.forEach(colorOption => {
     colorOption.addEventListener('click', () => {
 
         if (failedGame) {
-            wrongAnimation();
+            handleStatus('wrong');
             return;
         }
 
@@ -67,13 +88,12 @@ colorOptions.forEach(colorOption => {
         if (colorOption.dataset.color === correctColor) {
             score++;
             scoreDisplay.textContent = score;
-            gameStatus.textContent = 'Correct!';
+            handleStatus('correct');
 
-            assignColors();
         } else {
-            wrongAnimation();
+            handleStatus('wrong');
 
-            gameStatus.textContent = 'Wrong! Start a new game';
+
             failedGame = true;
         }
     });
@@ -85,6 +105,7 @@ let startGame = () => {
     failedGame = false;
     gameStatus.textContent = 'Choose the correct option!';
     scoreDisplay.textContent = score;
+    gameStatus.classList.remove('text-green-500', 'text-red-600');
     assignColors();
 }
 
